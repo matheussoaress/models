@@ -38,9 +38,6 @@ def run_contextual_bandit(context_dim, num_actions, dataset, algos):
   Returns:
     h_actions: Matrix with actions: size (num_context, num_algorithms).
     h_rewards: Matrix with rewards: size (num_context, num_algorithms).
-    #ANISIO
-    h_regrets: Matrix with regrets: size (num_context, num_algorithms).
-    #ANISIO
   """
 
   num_contexts = dataset.shape[0]
@@ -52,21 +49,11 @@ def run_contextual_bandit(context_dim, num_actions, dataset, algos):
   h_actions = np.empty((0, len(algos)), float)
   h_rewards = np.empty((0, len(algos)), float)
 
-  #ANISIO
-  h_regrets = np.empty((0, len(algos)), float)
-  #ANISIO
-
   # Run the contextual bandit process
   for i in range(num_contexts):
     context = cmab.context(i)
     actions = [a.action(context) for a in algos]
     rewards = [cmab.reward(i, action) for action in actions]
-
-    #ANISIO
-    opt_action = cmab.optimal(i)
-    opt_reward = cmab.reward(i, opt_action)
-    regrets    = opt_reward - rewards
-    #ANISIO
 
     for j, a in enumerate(algos):
       a.update(context, actions[j], rewards[j])
@@ -74,11 +61,7 @@ def run_contextual_bandit(context_dim, num_actions, dataset, algos):
     h_actions = np.vstack((h_actions, np.array(actions)))
     h_rewards = np.vstack((h_rewards, np.array(rewards)))
 
-    #ANISIO
-    h_regrets = np.vstack((h_regrets, np.array(regrets)))
-    #ANISIO
-
-  return h_actions, h_rewards, h_regrets
+  return h_actions, h_rewards
 
 
 class ContextualBandit(object):
